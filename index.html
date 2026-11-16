@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="lo" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ນ້ຳຝົນ ຫຼ້າມະນີ | Web Design Portfolio</title>
+    
+    <!-- ໂຫຼດ Font ພາສາລາວ Noto Sans Lao ແລະ Plus Jakarta Sans ຈາກ Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- ໂຫຼດ Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- ໂຫຼດ Font Awesome ສຳລັບໄອຄອນຕ່າງໆ -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- ຕັ້ງຄ່າ Tailwind ໃຫ້ຮອງຮັບ Font ພາສາລາວ ແລະ Dark Mode -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans Lao"', '"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'float': 'float 4s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* ປັບແຕ່ງ Glassmorphism ແລະ Scrollbar */
+        .glass {
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .dark .glass {
+            background: rgba(17, 24, 39, 0.72);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        body {
+            line-height: 1.75; /* ເພີ່ມໄລຍະຫ່າງແຖວໃຫ້ສະຫຼະພາສາລາວອ່ານງ່າຍ ແລະ ບໍ່ຕັດ */
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 selection:bg-violet-500 selection:text-white overflow-x-hidden">
+
+    <!-- ພື້ນຫຼັງ Gradient Blobs ແບບທັນສະໄໝ -->
+    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div class="absolute top-0 -left-4 w-72 h-72 bg-purple-300 dark:bg-purple-900/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-70 animate-blob"></div>
+        <div class="absolute top-0 -right-4 w-72 h-72 bg-cyan-300 dark:bg-cyan-900/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 dark:bg-pink-900/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- ກ່ອງແຈ້ງເຕືອນ (Toast Notification) ແທນ alert() -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="glass px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 border-l-4 border-violet-600">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-violet-600 dark:text-violet-400 text-lg"></i>
+            <span id="toast-message" class="text-sm font-medium">ສຳເລັດແລ້ວ!</span>
+        </div>
+    </div>
+
+    <!-- ==================== 1. ແຖບເມນູດ້ານເທິງ (NAVBAR) ==================== -->
+    <header class="fixed top-0 inset-x-0 z-40 transition-all duration-300">
+        <nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-3">
+            <div class="glass rounded-2xl px-4 sm:px-6 py-3 shadow-sm flex items-center justify-between">
+                <!-- ໂລໂກ້ / ຊື່ -->
+                <a href="#home" class="flex items-center gap-2.5 group">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 to-cyan-500 flex items-center justify-center text-white font-bold text-lg shadow-md group-hover:scale-105 transition-transform">
+                        ນຝ
+                    </div>
+                    <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-violet-600 to-cyan-600 dark:from-violet-400 dark:to-cyan-400 bg-clip-text text-transparent">
+                        Namfon.dev
+                    </span>
+                </a>
+
+                <!-- ເມນູສຳລັບໜ້າຈໍໃຫຍ່ (Desktop) -->
+                <div class="hidden md:flex items-center gap-7 text-sm font-medium">
+                    <a href="#home" class="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">ໜ້າຫຼັກ</a>
+                    <a href="#about" class="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">ກ່ຽວກັບຂ້ອຍ</a>
+                    <a href="#skills" class="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">ຄວາມສາມາດ</a>
+                    <a href="#projects" class="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">ຜົນງານ</a>
+                    <a href="#contact" class="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">ຕິດຕໍ່</a>
+                </div>
+
+                <!-- ປຸ່ມປ່ຽນໂໝດມືດ/ແຈ້ງ ແລະ ປຸ່ມເມນູມືຖື -->
+                <div class="flex items-center gap-2">
+                    <button id="theme-toggle" aria-label="Toggle Dark Mode" class="p-2.5 rounded-xl bg-slate-200/70 dark:bg-slate-800/80 hover:bg-violet-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors">
+                        <i id="theme-icon" class="fa-solid fa-moon text-base"></i>
+                    </button>
+
+                    <button id="mobile-menu-btn" aria-label="Open Menu" class="md:hidden p-2.5 rounded-xl bg-slate-200/70 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200">
+                        <i class="fa-solid fa-bars text-base"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ເມນູສຳລັບມືຖື (Mobile Dropdown) -->
+            <div id="mobile-menu" class="hidden md:hidden glass rounded-2xl mt-2 p-4 shadow-lg flex-col gap-3 text-sm font-medium">
+                <a href="#home" class="mobile-link px-3 py-2 rounded-xl hover:bg-violet-500/10 hover:text-violet-600 dark:hover:text-violet-400">ໜ້າຫຼັກ</a>
+                <a href="#about" class="mobile-link px-3 py-2 rounded-xl hover:bg-violet-500/10 hover:text-violet-600 dark:hover:text-violet-400">ກ່ຽວກັບຂ້ອຍ</a>
+                <a href="#skills" class="mobile-link px-3 py-2 rounded-xl hover:bg-violet-500/10 hover:text-violet-600 dark:hover:text-violet-400">ຄວາມສາມາດ</a>
+                <a href="#projects" class="mobile-link px-3 py-2 rounded-xl hover:bg-violet-500/10 hover:text-violet-600 dark:hover:text-violet-400">ຜົນງານ</a>
+                <a href="#contact" class="mobile-link px-3 py-2 rounded-xl hover:bg-violet-500/10 hover:text-violet-600 dark:hover:text-violet-400">ຕິດຕໍ່</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ==================== 2. ສ່ວນຕ້ອນຮັບ (HERO SECTION) ==================== -->
+    <section id="home" class="pt-32 pb-20 md:pt-40 md:pb-28 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+        <div class="flex flex-col-reverse lg:flex-row items-center justify-between gap-12">
+            
+            <!-- ຂໍ້ຄວາມແນະນຳຕົວ -->
+            <div class="flex-1 text-center lg:text-left space-y-6">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs sm:text-sm font-semibold text-violet-700 dark:text-violet-300 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span>ນັກສຶກສາສາຂາ ອອກແບບເວັບໄຊ (Web Design)</span>
+                </div>
+
+                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+                    ສະບາຍດີ, ຂ້ອຍຊື່ <br>
+                    <span class="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
+                        ນ້ຳຝົນ ຫຼ້າມະນີ
+                    </span>
+                </h1>
+
+                <p class="text-slate-600 dark:text-slate-300 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0">
+                    ຍິນດີຕ້ອນຮັບສູ່ Portfolio ສ່ວນຕົວຂອງຂ້ອຍ! ຂ້ອຍມີຄວາມຫຼົງໄຫຼໃນການອອກແບບເວັບໄຊທີ່ທັນສະໄໝ, ສວຍງາມ ແລະ ໃຊ້ງານງ່າຍ ເພື່ອສ້າງປະສົບການທີ່ດີໃຫ້ກັບຜູ້ໃຊ້ງານ.
+                </p>
+
+                <!-- ກ່ອງຄຳຄົມປະຈຳຕົວ (ສາມາດກົດແກ້ໄຂໄດ້ທັນທີ) -->
+                <div class="glass rounded-2xl p-4 sm:p-5 max-w-xl mx-auto lg:mx-0 border-l-4 border-violet-500 text-left relative group shadow-sm">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-xs font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-quote-left"></i> ຄຳຄົມປະຈຳຕົວ
+                        </span>
+                        <button onclick="toggleEditMotto()" class="text-xs px-2.5 py-1 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 text-violet-600 dark:text-violet-300 transition-colors flex items-center gap-1" title="ແກ້ໄຂຄຳຄົມ">
+                            <i class="fa-solid fa-pen-to-square"></i> ແກ້ໄຂ
+                        </button>
+                    </div>
+                    <p id="motto-display" class="text-base sm:text-lg font-semibold italic text-slate-800 dark:text-slate-100">
+                        "ການຮັກຕົວເອງຄືຮັກດີທີ່ສຸດ"
+                    </p>
+                    <div id="motto-edit-box" class="hidden mt-2 space-y-2">
+                        <input type="text" id="motto-input" class="w-full px-3 py-2 text-sm rounded-xl bg-white/80 dark:bg-slate-800 border border-violet-300 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="ພິມຄຳຄົມປະຈຳຕົວຂອງເຈົ້າ...">
+                        <div class="flex justify-end gap-2">
+                            <button onclick="saveMotto()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-violet-600 text-white hover:bg-violet-700">ບັນທຶກ</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ປຸ່ມກົດ CTA -->
+                <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+                    <a href="#contact" class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>ຕິດຕໍ່ຂ້ອຍ</span>
+                    </a>
+                    <a href="#projects" class="px-6 py-3.5 rounded-2xl glass hover:bg-white/90 dark:hover:bg-slate-800/90 font-semibold transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-laptop-code text-violet-600 dark:text-violet-400"></i>
+                        <span>ເບິ່ງຜົນງານ</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- ຮູບພາບ Profile ພ້ອມປຸ່ມເລືອກຮູບຂອງຕົນເອງ -->
+            <div class="relative flex flex-col items-center animate-float">
+                <div class="relative w-60 h-60 sm:w-72 sm:h-72 rounded-full p-2 bg-gradient-to-tr from-violet-600 via-fuchsia-500 to-cyan-400 shadow-2xl">
+                    <!-- 
+                        ສຳລັບ GitHub Pages: 
+                        ໃຫ້ນຳຮູບໂປຣໄຟລ໌ຂອງເຈົ້າມາວາງໄວ້ໃນໂຟນເດີດຽວກັນ ແລະ ຕັ້ງຊື່ວ່າ "profile.jpg" 
+                    -->
+                    <img id="profile-img" 
+                         src="img/fon.jpeg" 
+                         onerror="this.onerror=null; this.src='https://placehold.co/500x500/7c3aed/ffffff?text=Namfon';"
+                         alt="ນ້ຳຝົນ ຫຼ້າມະນີ" 
+                         class="w-full h-full object-cover rounded-full border-4 border-white dark:border-slate-900 bg-violet-600">
+                    
+                    <!-- ປຸ່ມປ່ຽນຮູບໂປຣໄຟລ໌ -->
+                    <label for="profile-upload" class="absolute bottom-2 right-2 w-12 h-12 rounded-full bg-violet-600 hover:bg-violet-700 text-white flex items-center justify-center shadow-lg cursor-pointer transition-transform hover:scale-110 border-2 border-white dark:border-slate-900" title="ປ່ຽນຮູບໂປຣໄຟລ໌">
+                        <i class="fa-solid fa-camera text-lg"></i>
+                    </label>
+                    <input type="file" id="profile-upload" accept="image/*" class="hidden" onchange="previewProfileImage(event)">
+                </div>
+                <label for="profile-upload" class="mt-3 text-xs text-slate-600 dark:text-slate-300 glass px-3.5 py-1.5 rounded-full cursor-pointer hover:border-violet-500 transition-colors">
+                    <i class="fa-solid fa-camera text-violet-500 mr-1"></i> ປ່ຽນຮູບໂປຣໄຟລ໌ (GitHub: profile.jpg)
+                </label>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ==================== 3. ຂໍ້ມູນປະຫວັດສ່ວນຕົວ (ABOUT SECTION) ==================== -->
+    <section id="about" class="py-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+        <div class="text-center mb-14 space-y-3">
+            <span class="text-xs font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400">Personal Profile</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold">ຂໍ້ມູນປະຫວັດສ່ວນຕົວ</h2>
+            <div class="w-20 h-1.5 bg-gradient-to-r from-violet-600 to-cyan-500 mx-auto rounded-full"></div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- ກາດຂໍ້ມູນຫຼັກ -->
+            <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-5">
+                
+                <!-- ຊື່ ແລະ ນາມສະກຸນ -->
+                <div class="glass rounded-3xl p-6 hover:-translate-y-1 transition-all duration-300 shadow-sm">
+                    <div class="w-12 h-12 rounded-2xl bg-violet-500/15 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">ຊື່ ແລະ ນາມສະກຸນ</p>
+                    <h3 class="text-lg font-bold mt-1">ນ້ຳຝົນ ຫຼ້າມະນີ</h3>
+                </div>
+
+                <!-- ວັນເດືອນປີເກີດ -->
+                <div class="glass rounded-3xl p-6 hover:-translate-y-1 transition-all duration-300 shadow-sm">
+                    <div class="w-12 h-12 rounded-2xl bg-pink-500/15 text-pink-600 dark:text-pink-400 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-cake-candles"></i>
+                    </div>
+                    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">ວັນເດືອນປີເກີດ</p>
+                    <h3 class="text-lg font-bold mt-1">19 / 05 / 2008</h3>
+                </div>
+
+                <!-- ທີ່ຢູ່ -->
+                <div class="glass rounded-3xl p-6 hover:-translate-y-1 transition-all duration-300 shadow-sm sm:col-span-2">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">ທີ່ຢູ່ປັດຈຸບັນ</p>
+                            <h3 class="text-lg font-bold mt-1">ບ້ານ ສັນຕິສຸກ, ເມືອງທ່າແຂກ, ແຂວງຄຳມ່ວນ</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ບ່ອນຮຽນ & ສາຂາຮຽນ -->
+                <div class="glass rounded-3xl p-6 hover:-translate-y-1 transition-all duration-300 shadow-sm sm:col-span-2">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">ການສຶກສາ & ສາຂາຮຽນ</p>
+                                <h3 class="text-lg font-bold mt-1">ສາຂາຮຽນ: ອອກແບບເວັບໄຊ (Web Design)</h3>
+                                <p id="school-display" class="text-sm sm:text-base text-slate-700 dark:text-slate-200 mt-1">
+                                    ບ່ອນຮຽນ: <span class="font-semibold text-violet-700 dark:text-violet-300">ວິທະຍາໄລເຕັກນິກ-ວິຊາຊີບແຂວງຄຳມ່ວນ</span>
+                                </p>
+                            </div>
+                        </div>
+                        <button onclick="editSchool()" class="text-xs px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 font-medium shrink-0" title="ແກ້ໄຂບ່ອນຮຽນ">
+                            <i class="fa-solid fa-pen"></i> ແກ້ໄຂ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ຄວາມສາມາດພິເສດ (Highlighted Card) -->
+                <div class="glass rounded-3xl p-6 hover:-translate-y-1 transition-all duration-300 shadow-sm sm:col-span-2 border border-fuchsia-500/30 bg-gradient-to-r from-violet-500/5 via-fuchsia-500/5 to-pink-500/5">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-fuchsia-600 to-pink-500 text-white flex items-center justify-center text-2xl shrink-0 shadow-md">
+                            <i class="fa-solid fa-microphone-lines"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-fuchsia-600 dark:text-fuchsia-400">Special Talent</span>
+                            <h3 class="text-lg sm:text-xl font-extrabold mt-0.5">ຄວາມສາມາດພິເສດ: ຮ້ອງເພງໄດ້</h3>
+                            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-0.5">
+                                ມີຄວາມສາມາດດ້ານການຮ້ອງເພງ ແລະ ມັກໃນສຽງດົນຕີ
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ກາດສິ່ງທີ່ມັກ (Hobbies & Interests) -->
+            <div class="glass rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-sm">
+                <div>
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">ສິ່ງທີ່ມັກ & ວຽກອະດິເລກ</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">
+                        ກິດຈະກຳທີ່ເຮັດໃຫ້ມີຄວາມສຸກ ແລະ ຜ່ອນຄາຍໃນເວລາວ່າງ:
+                    </p>
+
+                    <div class="space-y-4">
+                        <!-- ຂອງກິນ -->
+                        <div class="flex items-center gap-4 p-3.5 rounded-2xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50">
+                            <div class="w-11 h-11 rounded-xl bg-orange-500/15 text-orange-500 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-utensils"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-base">ຂອງກິນ</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">ມັກຊີມອາຫານແຊບໆ ແລະ ຂອງຫວານ</p>
+                            </div>
+                        </div>
+
+                        <!-- ຟັງເພງ -->
+                        <div class="flex items-center gap-4 p-3.5 rounded-2xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50">
+                            <div class="w-11 h-11 rounded-xl bg-indigo-500/15 text-indigo-500 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-headphones"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-base">ຟັງເພງ</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">ຟັງເພງສ້າງແຮງບັນດານໃຈເວລາອອກແບບ</p>
+                            </div>
+                        </div>
+
+                        <!-- ຫຼິ້ນເກມ -->
+                        <div class="flex items-center gap-4 p-3.5 rounded-2xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50">
+                            <div class="w-11 h-11 rounded-xl bg-rose-500/15 text-rose-500 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-gamepad"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-base">ຫຼິ້ນເກມ</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">ຫຼິ້ນເກມຄາຍຄຽດ ແລະ ຝຶກໄຫວພິບ</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 4. ຄວາມສາມາດພິເສດ & ທັກສະ (SKILLS SECTION) ==================== -->
+    <section id="skills" class="py-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400">Skills & Talents</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold mt-1">ຄວາມສາມາດພິເສດ & ທັກສະ</h2>
+            </div>
+            <!-- ປຸ່ມເພີ່ມຄວາມສາມາດພິເສດຂອງຕົນເອງ -->
+            <button onclick="toggleSkillModal()" class="self-start sm:self-auto px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold shadow-md transition-all flex items-center gap-2">
+                <i class="fa-solid fa-plus"></i>
+                <span>ເພີ່ມຄວາມສາມາດ</span>
+            </button>
+        </div>
+
+        <!-- ລາຍການຄວາມສາມາດ -->
+        <div id="skills-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Special Talent: ຮ້ອງເພງໄດ້ -->
+            <div class="glass rounded-3xl p-6 shadow-sm hover:-translate-y-1 transition-all border border-fuchsia-400/40">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-fuchsia-500/15 text-fuchsia-600 dark:text-fuchsia-400 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-microphone-lines"></i>
+                        </div>
+                        <h3 class="font-bold text-base">ຮ້ອງເພງໄດ້ (Singing)</h3>
+                    </div>
+                    <span class="text-sm font-bold text-fuchsia-600 dark:text-fuchsia-400">95%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                    <div class="bg-gradient-to-r from-fuchsia-600 to-pink-500 h-2.5 rounded-full" style="width: 95%"></div>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-3">ຄວາມສາມາດພິເສດດ້ານການຮ້ອງເພງ ແລະ ຖ່າຍທອດອາລົມຜ່ານສຽງເພງ</p>
+            </div>
+
+            <!-- Skill 1 -->
+            <div class="glass rounded-3xl p-6 shadow-sm hover:-translate-y-1 transition-all">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-orange-500/15 text-orange-600 flex items-center justify-center text-lg">
+                            <i class="fa-brands fa-html5"></i>
+                        </div>
+                        <h3 class="font-bold text-base">HTML5 & CSS3</h3>
+                    </div>
+                    <span class="text-sm font-bold text-violet-600 dark:text-violet-400">90%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                    <div class="bg-gradient-to-r from-orange-500 to-amber-500 h-2.5 rounded-full" style="width: 90%"></div>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-3">ສ້າງໂຄງສ້າງເວັບໄຊ ແລະ ຈັດໜ້າຕາໃຫ້ສວຍງາມທັນສະໄໝ</p>
+            </div>
+
+            <!-- Skill 2 -->
+            <div class="glass rounded-3xl p-6 shadow-sm hover:-translate-y-1 transition-all">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-pink-500/15 text-pink-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </div>
+                        <h3 class="font-bold text-base">UI/UX Web Design</h3>
+                    </div>
+                    <span class="text-sm font-bold text-violet-600 dark:text-violet-400">85%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                    <div class="bg-gradient-to-r from-pink-500 to-rose-500 h-2.5 rounded-full" style="width: 85%"></div>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-3">ອອກແບບ User Interface ທີ່ເນັ້ນຄວາມງ່າຍຕໍ່ການໃຊ້ງານ</p>
+            </div>
+
+            <!-- Skill 3 -->
+            <div class="glass rounded-3xl p-6 shadow-sm hover:-translate-y-1 transition-all">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-500/15 text-cyan-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-mobile-screen"></i>
+                        </div>
+                        <h3 class="font-bold text-base">Responsive Design</h3>
+                    </div>
+                    <span class="text-sm font-bold text-violet-600 dark:text-violet-400">88%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                    <div class="bg-gradient-to-r from-cyan-500 to-blue-500 h-2.5 rounded-full" style="width: 88%"></div>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-3">ປັບແຕ່ງເວັບໄຊໃຫ້ສະແດງຜົນໄດ້ດີທັງໃນມືຖື, ແທັບເລັດ ແລະ ຄອມພິວເຕີ</p>
+            </div>
+
+            <!-- Skill 4 -->
+            <div class="glass rounded-3xl p-6 shadow-sm hover:-translate-y-1 transition-all">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-yellow-500/15 text-yellow-600 flex items-center justify-center text-lg">
+                            <i class="fa-brands fa-js"></i>
+                        </div>
+                        <h3 class="font-bold text-base">JavaScript ພື້ນຖານ</h3>
+                    </div>
+                    <span class="text-sm font-bold text-violet-600 dark:text-violet-400">75%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                    <div class="bg-gradient-to-r from-yellow-400 to-amber-500 h-2.5 rounded-full" style="width: 75%"></div>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-3">ເພີ່ມລູກຫຼິ້ນ ແລະ ການໂຕ້ຕອບໃຫ້ກັບໜ້າເວັບໄຊ</p>
+            </div>
+
+            <!-- Skill 5 -->
+            <div class="glass rounded-3xl p-6 shadow-sm hover:-translate-y-1 transition-all">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-slate-500/15 text-slate-700 dark:text-slate-300 flex items-center justify-center text-lg">
+                            <i class="fa-brands fa-github"></i>
+                        </div>
+                        <h3 class="font-bold text-base">Git & GitHub Pages</h3>
+                    </div>
+                    <span class="text-sm font-bold text-violet-600 dark:text-violet-400">82%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                    <div class="bg-gradient-to-r from-slate-600 to-slate-800 dark:from-slate-400 dark:to-slate-200 h-2.5 rounded-full" style="width: 82%"></div>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-3">ຈັດເກັບໂຄດ ແລະ ເຜີຍແຜ່ເວັບໄຊອອນລາຍຜ່ານ GitHub</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ຟອມປ໊ອບອັບສຳລັບເພີ່ມຄວາມສາມາດພິເສດ (Modal) -->
+    <div id="skill-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="glass bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold">ເພີ່ມຄວາມສາມາດພິເສດໃໝ່</h3>
+                <button onclick="toggleSkillModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold mb-1">ຊື່ຄວາມສາມາດ (ເຊັ່ນ: ຕັດຕໍ່ວິດີໂອ, ແຕ້ມຮູບ, ພາສາອັງກິດ)</label>
+                    <input type="text" id="new-skill-name" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="ພິມຊື່ຄວາມສາມາດ...">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">ລະດັບຄວາມຊຳນານ (1 - 100%)</label>
+                    <input type="number" id="new-skill-percent" min="1" max="100" value="85" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">ຄຳອະທິບາຍສັ້ນໆ</label>
+                    <input type="text" id="new-skill-desc" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="ອະທິບາຍຄວາມສາມາດຂອງເຈົ້າ...">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="toggleSkillModal()" class="px-4 py-2 rounded-xl text-sm font-medium bg-slate-200 dark:bg-slate-800">ຍົກເລີກ</button>
+                <button onclick="addNewSkill()" class="px-4 py-2 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-700 text-white">ເພີ່ມເລີຍ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 5. ຜົນງານການອອກແບບ (PROJECTS SECTION) ==================== -->
+    <section id="projects" class="py-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+        <div class="text-center mb-14 space-y-3">
+            <span class="text-xs font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400">My Portfolio</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold">ຜົນງານການອອກແບບເວັບໄຊ</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
+                ຕົວຢ່າງຜົນງານການອອກແບບ ແລະ ພັດທະນາເວັບໄຊ (ສາມາດແກ້ໄຂລິ້ງ GitHub ຂອງເຈົ້າໄດ້ໃນໂຄດ)
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Project 1 -->
+            <div class="glass rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col">
+                <div class="h-48 bg-gradient-to-br from-violet-600 via-indigo-600 to-cyan-500 p-6 flex flex-col justify-between text-white relative overflow-hidden">
+                    <div class="flex justify-between items-center z-10">
+                        <span class="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-semibold">Web Design</span>
+                        <i class="fa-solid fa-globe text-2xl opacity-80"></i>
+                    </div>
+                    <h3 class="text-xl font-bold z-10">ເວັບໄຊແນະນຳການທ່ອງທ່ຽວ ແຂວງຄຳມ່ວນ</h3>
+                </div>
+                <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                    <p class="text-sm text-slate-600 dark:text-slate-300">
+                        ອອກແບບເວັບໄຊແນະນຳສະຖານທີ່ທ່ອງທ່ຽວທີ່ສວຍງາມໃນເມືອງທ່າແຂກ ແລະ ແຂວງຄຳມ່ວນ ພ້ອມລະບົບຄົ້ນຫາທີ່ທັນສະໄໝ.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs px-2.5 py-1 rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-300 font-medium">HTML5</span>
+                        <span class="text-xs px-2.5 py-1 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-300 font-medium">Tailwind CSS</span>
+                    </div>
+                    <div class="pt-2 border-t border-slate-200/60 dark:border-slate-800 flex items-center justify-between">
+                        <a href="https://github.com" target="_blank" class="text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline flex items-center gap-1.5">
+                            <i class="fa-brands fa-github"></i> Source Code
+                        </a>
+                        <a href="#projects" onclick="showToast('ກຳລັງເປີດຕົວຢ່າງຜົນງານ...')" class="text-xs px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold">
+                            ເບິ່ງເວັບໄຊ
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 2 -->
+            <div class="glass rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col">
+                <div class="h-48 bg-gradient-to-br from-pink-500 via-rose-500 to-orange-400 p-6 flex flex-col justify-between text-white relative overflow-hidden">
+                    <div class="flex justify-between items-center z-10">
+                        <span class="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-semibold">E-Commerce UI</span>
+                        <i class="fa-solid fa-mug-hot text-2xl opacity-80"></i>
+                    </div>
+                    <h3 class="text-xl font-bold z-10">ຮ້ານຄາເຟ່ & ເບເກີຣີ ອອນລາຍ</h3>
+                </div>
+                <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                    <p class="text-sm text-slate-600 dark:text-slate-300">
+                        ອອກແບບໜ້າເວັບສັ່ງເຄື່ອງດື່ມ ແລະ ຂອງຫວານອອນລາຍ ໂດຍເນັ້ນໂທນສີອົບອຸ່ນ, ໜ້າຮັກ ແລະ ຮອງຮັບການສັ່ງຊື້ຜ່ານມືຖື.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs px-2.5 py-1 rounded-lg bg-pink-500/10 text-pink-600 dark:text-pink-300 font-medium">UI/UX</span>
+                        <span class="text-xs px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-300 font-medium">JavaScript</span>
+                    </div>
+                    <div class="pt-2 border-t border-slate-200/60 dark:border-slate-800 flex items-center justify-between">
+                        <a href="https://github.com" target="_blank" class="text-sm font-semibold text-pink-600 dark:text-pink-400 hover:underline flex items-center gap-1.5">
+                            <i class="fa-brands fa-github"></i> Source Code
+                        </a>
+                        <a href="#projects" onclick="showToast('ກຳລັງເປີດຕົວຢ່າງຜົນງານ...')" class="text-xs px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold">
+                            ເບິ່ງເວັບໄຊ
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 3 -->
+            <div class="glass rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col">
+                <div class="h-48 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 p-6 flex flex-col justify-between text-white relative overflow-hidden">
+                    <div class="flex justify-between items-center z-10">
+                        <span class="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-semibold">Personal Web</span>
+                        <i class="fa-solid fa-code text-2xl opacity-80"></i>
+                    </div>
+                    <h3 class="text-xl font-bold z-10">Personal Portfolio V1</h3>
+                </div>
+                <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                    <p class="text-sm text-slate-600 dark:text-slate-300">
+                        ເວັບໄຊສະແດງປະຫວັດສ່ວນຕົວ ແລະ ຜົນງານການຮຽນສາຂາອອກແບບເວັບໄຊ ທີ່ສາມາດປັບປ່ຽນໂໝດມືດ-ແຈ້ງໄດ້.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 font-medium">Responsive</span>
+                        <span class="text-xs px-2.5 py-1 rounded-lg bg-slate-500/10 text-slate-600 dark:text-slate-300 font-medium">GitHub Pages</span>
+                    </div>
+                    <div class="pt-2 border-t border-slate-200/60 dark:border-slate-800 flex items-center justify-between">
+                        <a href="https://github.com" target="_blank" class="text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1.5">
+                            <i class="fa-brands fa-github"></i> Source Code
+                        </a>
+                        <a href="#home" class="text-xs px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold">
+                            ໜ້າປັດຈຸບັນ
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 6. ຊ່ອງທາງການຕິດຕໍ່ (CONTACT SECTION) ==================== -->
+    <section id="contact" class="py-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+        <div class="glass rounded-3xl p-6 sm:p-10 lg:p-12 shadow-xl">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                
+                <!-- ຂໍ້ມູນການຕິດຕໍ່ -->
+                <div class="space-y-6">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400">Get In Touch</span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold mt-1">ຊ່ອງທາງການຕິດຕໍ່</h2>
+                        <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 mt-3">
+                            ຫາກທ່ານສົນໃຈຮ່ວມງານ, ແລກປ່ຽນຄວາມຮູ້ດ້ານການອອກແບບເວັບໄຊ ຫຼື ຕ້ອງການຕິດຕໍ່ສອບຖາມ ສາມາດຕິດຕໍ່ໄດ້ຕາມຊ່ອງທາງດ້ານລຸ່ມນີ້:
+                        </p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- ເບີໂທ -->
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50">
+                            <a href="tel:02077165740" class="flex items-center gap-4 group">
+                                <div class="w-12 h-12 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-phone"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">ເບີໂທລະສັບ / WhatsApp</p>
+                                    <p class="font-bold text-base sm:text-lg">020 7716 5740</p>
+                                </div>
+                            </a>
+                            <button onclick="copyText('02077165740', 'ຄັດລອກເບີໂທ 02077165740 ແລ້ວ!')" class="p-2.5 rounded-xl bg-slate-200/70 dark:bg-slate-700 hover:bg-violet-600 hover:text-white transition-colors" title="ຄັດລອກເບີໂທ">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+
+                        <!-- ອີເມວ -->
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50">
+                            <a href="mailto:namfon.1952008@gmail.com" class="flex items-center gap-4 group overflow-hidden">
+                                <div class="w-12 h-12 rounded-xl bg-violet-500/15 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </div>
+                                <div class="truncate">
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">ອີເມວ (Email)</p>
+                                    <p class="font-bold text-sm sm:text-base truncate">namfon.1952008@gmail.com</p>
+                                </div>
+                            </a>
+                            <button onclick="copyText('namfon.1952008@gmail.com', 'ຄັດລອກອີເມວແລ້ວ!')" class="p-2.5 rounded-xl bg-slate-200/70 dark:bg-slate-700 hover:bg-violet-600 hover:text-white transition-colors shrink-0 ml-2" title="ຄັດລອກອີເມວ">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+
+                        <!-- ທີ່ຢູ່ -->
+                        <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50">
+                            <div class="w-12 h-12 rounded-xl bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-map-location-dot"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">ທີ່ຢູ່</p>
+                                <p class="font-bold text-sm sm:text-base">ບ້ານ ສັນຕິສຸກ, ເມືອງທ່າແຂກ, ແຂວງຄຳມ່ວນ</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ປຸ່ມ Social Media -->
+                    <div class="flex flex-wrap items-center gap-3 pt-2">
+                        <a href="https://github.com" target="_blank" class="px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-800 text-white hover:bg-violet-600 transition-colors flex items-center gap-2 text-sm font-semibold">
+                            <i class="fa-brands fa-github text-lg"></i>
+                            <span>GitHub</span>
+                        </a>
+                        <a href="https://facebook.com" target="_blank" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-colors flex items-center gap-2 text-sm font-semibold">
+                            <i class="fa-brands fa-facebook text-lg"></i>
+                            <span>Facebook</span>
+                        </a>
+                        <a href="tel:02077165740" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition-colors flex items-center gap-2 text-sm font-semibold">
+                            <i class="fa-brands fa-whatsapp text-lg"></i>
+                            <span>ໂທ / WhatsApp</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- ຟອມສົ່ງຂໍ້ຄວາມ -->
+                <form onsubmit="handleContactSubmit(event)" class="bg-white/70 dark:bg-slate-900/70 p-6 sm:p-8 rounded-3xl border border-slate-200/60 dark:border-slate-800 space-y-4">
+                    <h3 class="text-xl font-bold mb-2">ສົ່ງຂໍ້ຄວາມຫາ ນ້ຳຝົນ</h3>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1.5">ຊື່ຂອງທ່ານ</label>
+                        <input type="text" required placeholder="ປ້ອນຊື່ຂອງທ່ານ..." class="w-full px-4 py-3 rounded-xl bg-slate-100/80 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1.5">ອີເມວ ຫຼື ເບີໂທຕິດຕໍ່ກັບ</label>
+                        <input type="text" required placeholder="example@gmail.com ຫຼື 020..." class="w-full px-4 py-3 rounded-xl bg-slate-100/80 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1.5">ຂໍ້ຄວາມ</label>
+                        <textarea rows="3" required placeholder="ຂຽນຂໍ້ຄວາມທີ່ຕ້ອງການຕິດຕໍ່..." class="w-full px-4 py-3 rounded-xl bg-slate-100/80 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"></textarea>
+                    </div>
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold shadow-lg shadow-violet-500/25 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>ສົ່ງຂໍ້ຄວາມ</span>
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="py-8 text-center text-sm text-slate-500 dark:text-slate-400 border-t border-slate-200/60 dark:border-slate-800/60 mt-10">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p>© 2026 <span class="font-bold text-slate-700 dark:text-slate-200">ນ້ຳຝົນ ຫຼ້າມະນີ</span>. ສະຫງວນລິຂະສິດ.</p>
+            <p class="text-xs">ອອກແບບ ແລະ ພັດທະນາສຳລັບ GitHub Pages <i class="fa-solid fa-heart text-rose-500 mx-1"></i></p>
+        </div>
+    </footer>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        // 1. ລະບົບປ່ຽນໂໝດມືດ / ແຈ້ງ (Dark / Light Mode)
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const htmlElement = document.documentElement;
+
+        // ກວດສອບຄ່າທີ່ບັນທຶກໄວ້
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            htmlElement.classList.add('dark');
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+            if (htmlElement.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                localStorage.setItem('theme', 'light');
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+            }
+        });
+
+        // 2. ລະບົບເປີດ-ປິດ ເມນູມືຖື
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('flex');
+        });
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('flex');
+            });
+        });
+
+        // 3. ລະບົບສະແດງຮູບໂປຣໄຟລ໌ເມື່ອເລືອກໄຟລ໌ຈາກເຄື່ອງ
+        function previewProfileImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-img').src = e.target.result;
+                    showToast('ອັບເດດຮູບໂປຣໄຟລ໌ສຳເລັດ!');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // 4. ລະບົບແກ້ໄຂຄຳຄົມປະຈຳຕົວ
+        function toggleEditMotto() {
+            const editBox = document.getElementById('motto-edit-box');
+            const input = document.getElementById('motto-input');
+            const currentText = document.getElementById('motto-display').innerText.replace(/^"|"$/g, '');
+            editBox.classList.toggle('hidden');
+            if (!editBox.classList.contains('hidden')) {
+                input.value = currentText;
+                input.focus();
+            }
+        }
+
+        function saveMotto() {
+            const input = document.getElementById('motto-input').value.trim();
+            if (input) {
+                document.getElementById('motto-display').innerText = `"${input}"`;
+                document.getElementById('motto-edit-box').classList.add('hidden');
+                showToast('ບັນທຶກຄຳຄົມປະຈຳຕົວແລ້ວ!');
+            }
+        }
+
+        // 5. ລະບົບເພີ່ມຊື່ບ່ອນຮຽນ
+        function editSchool() {
+            const schoolDisplay = document.getElementById('school-display');
+            schoolDisplay.innerHTML = `
+                <div class="flex items-center gap-2 mt-2">
+                    <input type="text" id="school-input" value="ວິທະຍາໄລເຕັກນິກ-ວິຊາຊີບແຂວງຄຳມ່ວນ" placeholder="ພິມຊື່ໂຮງຮຽນ ຫຼື ວິທະຍາໄລ..." class="px-3 py-1.5 text-sm rounded-xl bg-white dark:bg-slate-800 border border-amber-400 focus:outline-none w-full">
+                    <button onclick="saveSchool()" class="px-3 py-1.5 text-xs font-bold rounded-xl bg-amber-500 text-white shrink-0">ບັນທຶກ</button>
+                </div>
+            `;
+            document.getElementById('school-input').focus();
+        }
+
+        function saveSchool() {
+            const val = document.getElementById('school-input').value.trim();
+            const schoolDisplay = document.getElementById('school-display');
+            if (val) {
+                schoolDisplay.innerHTML = `ບ່ອນຮຽນ: <span class="font-semibold text-violet-700 dark:text-violet-300">${val}</span>`;
+                showToast('ບັນທຶກຂໍ້ມູນບ່ອນຮຽນແລ້ວ!');
+            } else {
+                schoolDisplay.innerHTML = `ບ່ອນຮຽນ: <span class="font-semibold text-violet-700 dark:text-violet-300">ວິທະຍາໄລເຕັກນິກ-ວິຊາຊີບແຂວງຄຳມ່ວນ</span>`;
+            }
+        }
+
+        // 6. ລະບົບເພີ່ມຄວາມສາມາດພິເສດ
+        function toggleSkillModal() {
+            const modal = document.getElementById('skill-modal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+        }
+
+        function addNewSkill() {
+            const name = document.getElementById('new-skill-name').value.trim();
+            let percent = parseInt(document.getElementById('new-skill-percent').value) || 80;
+            const desc = document.getElementById('new-skill-desc').value.trim() || 'ຄວາມສາມາດພິເສດທີ່ຝຶກຝົນ ແລະ ພັດທະນາຢ່າງຕໍ່ເນື່ອງ';
+
+            if (!name) {
+                showToast('ກະລຸນາປ້ອນຊື່ຄວາມສາມາດກ່ອນ!');
+                return;
+            }
+            percent = Math.min(100, Math.max(1, percent));
+
+            const grid = document.getElementById('skills-grid');
+            const newCard = document.createElement('div');
+            newCard.className = 'glass rounded-3xl p-6 shadow-sm hover:-translate-y-1 transition-all';
+            newCard.innerHTML = `
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <h3 class="font-bold text-base">${name}</h3>
+                    </div>
+                    <span class="text-sm font-bold text-violet-600 dark:text-violet-400">${percent}%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                    <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-2.5 rounded-full" style="width: ${percent}%"></div>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-3">${desc}</p>
+            `;
+            grid.appendChild(newCard);
+
+            // ລ້າງຄ່າ ແລະ ປິດ Modal
+            document.getElementById('new-skill-name').value = '';
+            document.getElementById('new-skill-desc').value = '';
+            toggleSkillModal();
+            showToast(`ເພີ່ມຄວາມສາມາດ "${name}" ສຳເລັດ!`);
+        }
+
+        // 7. ລະບົບຄັດລອກຂໍ້ຄວາມ (Clipboard)
+        function copyText(text, msg) {
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast(msg);
+        }
+
+        // 8. ລະບົບສົ່ງຟອມຕິດຕໍ່
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            e.target.reset();
+            showToast('ສົ່ງຂໍ້ຄວາມຫາ ນ້ຳຝົນ ສຳເລັດແລ້ວ! ຂອບໃຈທີ່ຕິດຕໍ່.');
+        }
+
+        // 9. ລະບົບ Toast ແຈ້ງເຕືອນ
+        let toastTimeout;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
